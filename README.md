@@ -11,7 +11,7 @@ AI-powered college portal built at a hackathon.
 - 🌗 Dark/light mode
 
 ## Live Demo
-👉 [facultyconnect-ai.netlify.app](facultyconnectai.netlify.app)
+👉 [facultyconnect-ai.netlify.app](https://facultyconnect-ai.netlify.app/)
 ## Setup
 1. Open `index.html` in browser
 2. Click 🔑 Add Gemini Key
