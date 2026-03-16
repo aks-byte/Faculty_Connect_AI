@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FacultyConnect AI — Your College, Smarter</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f1f8;--bg2:#ffffff;--bg3:#f7f6fc;--bg4:#eceaf6;--bg5:#e4e2f0;
+  --border:#dddbe8;--border2:#ccc9dc;
+  --text:#0d0c1a;--text2:#3a384f;--text3:#7a788f;--text4:#aeaccb;
+  --c1:#ff4d6d;--c2:#ff8c00;--c3:#06d6a0;--c4:#118ab2;
+  --c5:#7b2fff;--c6:#f72585;--c7:#3a86ff;--c8:#fb5607;
+  --cs:#7b2fff;--ec:#3a86ff;--me:#fb5607;--cv:#06d6a0;--ma:#f72585;
+  --free:#06d6a0;--busy:#ff4d6d;--away:#ff8c00;
+  --bri:'Bricolage Grotesque',sans-serif;
+  --jak:'Plus Jakarta Sans',sans-serif;
+  --shadow:0 4px 24px rgba(0,0,0,0.08);
+  --shadow2:0 8px 40px rgba(0,0,0,0.13);
+  --transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"]{
+  --bg:#0a0910;--bg2:#110f1c;--bg3:#171525;--bg4:#1e1b2e;--bg5:#252238;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#f0eef8;--text2:#b8b5cc;--text3:#6e6b85;--text4:#3d3b52;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow2:0 8px 40px rgba(0,0,0,0.6);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--jak);transition:background 0.4s,color 0.4s}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+ 
+/* ═══ SPLASH ═══ */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#0d0520,#051535,#041a0e);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity 0.6s ease,transform 0.6s ease;
+}
+#splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash-logo{
+  font-family:var(--bri);font-size:3rem;font-weight:800;letter-spacing:-0.04em;
+  background:linear-gradient(135deg,#a78bfa,#06d6a0,#60a5fa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:splashIn 0.8s ease 0.2s both;
+}
+.splash-tag{color:rgba(255,255,255,0.4);font-size:0.9rem;font-weight:500;margin-top:8px;animation:splashIn 0.8s ease 0.5s both}
+.splash-stats{display:flex;gap:2.5rem;margin-top:3rem;animation:splashIn 0.8s ease 0.8s both}
+.ss-item{text-align:center}
+.ss-num{font-family:var(--bri);font-size:2rem;font-weight:800;color:#fff}
+.ss-lbl{font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:2px}
+.splash-bar{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:3rem;overflow:hidden;animation:splashIn 0.8s ease 1s both}
+.splash-prog{height:100%;background:linear-gradient(90deg,var(--c5),var(--c3));border-radius:2px;animation:splashLoad 1.5s ease 1.2s both}
+@keyframes splashLoad{from{width:0}to{width:100%}}
+@keyframes splashIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.splash-dots{display:flex;gap:6px;margin-top:1rem;animation:splashIn 0.8s ease 1s both}
+.sd{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2)}
+.sd.active{background:var(--c3)}
+ 
+/* ═══ CONFETTI ═══ */
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:8888}
+ 
+/* ═══ APP ═══ */
+.app{display:grid;grid-template-rows:64px 1fr;height:100vh;opacity:0;transition:opacity 0.5s}
+.app.visible{opacity:1}
+ 
+/* ═══ NAV ═══ */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;
+  background:var(--bg2);border-bottom:1.5px solid var(--border);
+  position:relative;z-index:300;
+  box-shadow:var(--shadow);
+}
+nav::after{
+  content:'';position:absolute;bottom:-3px;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#ff4d6d,#ff8c00,#f72585,#7b2fff,#3a86ff,#06d6a0,#fb5607,#ff4d6d);
+  background-size:300% 100%;animation:rainbow 5s linear infinite;
+}
+@keyframes rainbow{0%{background-position:0 0}100%{background-position:300% 0}}
+.nav-logo{
+  font-family:var(--bri);font-size:1.3rem;font-weight:800;letter-spacing:-0.04em;cursor:pointer;
+  background:linear-gradient(135deg,var(--c5),var(--c6),var(--c7));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-logo sup{font-family:var(--jak);font-size:0.4rem;background:var(--c1);color:#fff;padding:2px 4px;border-radius:3px;vertical-align:top;margin-top:5px;display:inline-block;-webkit-text-fill-color:#fff;letter-spacing:0.05em}
+.nav-tabs{display:flex;gap:2px;background:var(--bg3);border:1.5px solid var(--border);border-radius:14px;padding:3px}
+.nav-tab{font-size:0.72rem;font-weight:700;padding:6px 14px;border-radius:11px;cursor:pointer;color:var(--text3);transition:var(--transition);font-family:var(--jak);white-space:nowrap;border:none;background:none}
+.nav-tab.active{color:#fff;background:linear-gradient(135deg,var(--c5),var(--c7));box-shadow:0 2px 10px rgba(123,47,255,0.35)}
+.nav-tab:hover:not(.active){background:var(--bg4);color:var(--text2)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-student{font-size:0.72rem;color:var(--text3);background:var(--bg3);border:1.5px solid var(--border);padding:5px 12px;border-radius:10px;cursor:pointer;transition:var(--transition)}
+.nav-student:hover{border-color:var(--c5);color:var(--text2)}
+.nav-student strong{color:var(--text2);font-weight:700}
+.ai-pill{display:flex;align-items:center;gap:5px;font-size:0.68rem;font-weight:700;background:rgba(6,214,160,0.12);border:1.5px solid rgba(6,214,160,0.3);color:#059c76;padding:5px 11px;border-radius:20px;font-family:var(--jak)}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--free);animation:aiGlow 2s ease infinite}
+@keyframes aiGlow{0%,100%{box-shadow:0 0 0 0 rgba(6,214,160,0.5)}50%{box-shadow:0 0 0 5px rgba(6,214,160,0)}}
+ 
+/* Theme toggle */
+.theme-btn{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:var(--transition)}
+.theme-btn:hover{border-color:var(--c5);transform:rotate(20deg)}
+ 
+/* Notif bell */
+.notif-btn{position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:var(--transition)}
+.notif-btn:hover{border-color:var(--c1);background:rgba(255,77,109,0.06)}
+.notif-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--c1);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--jak);border:2px solid var(--bg2);animation:badgePop 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes badgePop{from{transform:scale(0)}to{transform:scale(1)}}
+.notif-panel{
+  position:absolute;top:calc(100% + 12px);right:0;width:320px;
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow2);z-index:500;
+  opacity:0;transform:translateY(-8px) scale(0.97);pointer-events:none;
+  transition:var(--transition);
+}
+.notif-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+.np-head{padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.np-title{font-family:var(--bri);font-size:0.88rem;font-weight:800;color:var(--text)}
+.np-clear{font-size:0.68rem;color:var(--c5);cursor:pointer;font-weight:700}
+.np-item{display:flex;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer}
+.np-item:last-child{border-bottom:none}
+.np-item:hover{background:var(--bg3)}
+.np-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.np-text{font-size:0.76rem;color:var(--text2);line-height:1.5}
+.np-time{font-size:0.65rem;color:var(--text4);margin-top:2px}
+ 
+/* ═══ PAGES ═══ */
+.pages{overflow:hidden;height:calc(100vh - 64px)}
+.page{display:none;height:100%;overflow:hidden;animation:pageIn 0.3s ease}
+.page.active{display:flex}
+@keyframes pageIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+ 
+/* ═══ SHARED ═══ */
+.pg-title{font-family:var(--bri);font-size:1.45rem;font-weight:800;letter-spacing:-0.03em}
+.pg-sub{font-size:0.76rem;color:var(--text4);margin-top:2px}
+.grad-text{background:linear-gradient(135deg,var(--c5),var(--c7));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card-base{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;transition:var(--transition)}
+.card-base:hover{border-color:var(--border2);box-shadow:var(--shadow);transform:translateY(-2px)}
+.btn-grad{background:linear-gradient(135deg,var(--c5),var(--c7));color:#fff;border:none;border-radius:12px;padding:11px 20px;font-family:var(--bri);font-size:0.88rem;font-weight:800;cursor:pointer;transition:var(--transition);box-shadow:0 4px 16px rgba(123,47,255,0.3)}
+.btn-grad:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(123,47,255,0.4)}
+.input-style{width:100%;background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;padding:9px 12px;font-family:var(--jak);font-size:0.82rem;color:var(--text);outline:none;transition:var(--transition);margin-bottom:1rem}
+.input-style:focus{border-color:var(--c5);background:var(--bg2)}
+.lbl{font-size:0.6rem;font-weight:800;color:var(--text4);text-transform:uppercase;letter-spacing:0.1em;font-family:var(--jak);margin-bottom:6px;display:block}
+ 
+/* ═══ PAGE: AVAILABILITY ═══ */
+#p-availability{flex-direction:column}
+.avail-top{padding:1.2rem 1.5rem 0;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.stat-row{display:flex;gap:6px;margin-top:8px}
+.stat-chip{display:flex;align-items:center;gap:5px;font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:20px;font-family:var(--jak)}
+.sc-free{background:rgba(6,214,160,0.12);border:1.5px solid rgba(6,214,160,0.3);color:#059c76}
+.sc-busy{background:rgba(255,77,109,0.1);border:1.5px solid rgba(255,77,109,0.25);color:#c0304a}
+.sc-away{background:rgba(255,140,0,0.1);border:1.5px solid rgba(255,140,0,0.25);color:#b36000}
+.dept-bar{padding:0.75rem 1.5rem 0;display:flex;gap:6px;overflow-x:auto;flex-shrink:0}
+.dept-bar::-webkit-scrollbar{height:0}
+.d-chip{font-size:0.7rem;font-weight:700;padding:6px 16px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text3);cursor:pointer;transition:var(--transition);font-family:var(--jak);white-space:nowrap;flex-shrink:0}
+.d-chip:hover:not(.active){background:var(--bg4)}
+.d-chip.active{color:#fff;border-color:transparent}
+.avail-scroll{flex:1;overflow-y:auto;padding:1rem 1.5rem 1.5rem}
+.avail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+ 
+/* Faculty Card */
+.f-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:var(--transition);animation:cardIn 0.4s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.f-card:hover{transform:translateY(-3px);box-shadow:var(--shadow2)}
+.f-card-banner{height:7px}
+.f-card-body{padding:1.1rem 1.2rem}
+.fc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.fc-av{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--bri);font-size:0.82rem;font-weight:800;flex-shrink:0;position:relative;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
+.fc-av .sdot{position:absolute;bottom:-2px;right:-2px;width:11px;height:11px;border-radius:50%;border:2.5px solid var(--bg2)}
+.fc-name{font-family:var(--bri);font-size:0.88rem;font-weight:800;color:var(--text)}
+.fc-role{font-size:0.66rem;color:var(--text3);margin-top:2px;font-weight:500}
+.fc-dept-pill{font-size:0.6rem;font-weight:800;padding:3px 9px;border-radius:8px;font-family:var(--jak)}
+.st-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:0.66rem;font-weight:700;font-family:var(--jak);margin-bottom:8px}
+.stp-free{background:rgba(6,214,160,0.12);color:#059c76;border:1px solid rgba(6,214,160,0.25)}
+.stp-busy{background:rgba(255,77,109,0.1);color:#c0304a;border:1px solid rgba(255,77,109,0.2)}
+.stp-away{background:rgba(255,140,0,0.1);color:#b36000;border:1px solid rgba(255,140,0,0.2)}
+.fc-activity{font-size:0.7rem;color:var(--text3);padding:6px 10px;border-radius:8px;background:var(--bg3);border-left:3px solid;margin-bottom:10px;line-height:1.4}
+.slots-lbl{font-size:0.58rem;font-weight:800;color:var(--text4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;font-family:var(--jak)}
+.slots-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.sl{padding:4px 8px;border-radius:7px;font-size:0.66rem;font-family:var(--jak);font-weight:700;cursor:pointer;transition:var(--transition);border:1.5px solid}
+.sl-open{border-color:rgba(6,214,160,0.35);background:rgba(6,214,160,0.07);color:#059c76}
+.sl-open:hover,.sl-open.picked{background:var(--free);border-color:var(--free);color:#fff;box-shadow:0 3px 10px rgba(6,214,160,0.3)}
+.sl-taken{border-color:var(--border);background:transparent;color:var(--text4);text-decoration:line-through;cursor:not-allowed}
+.bk-btn{width:100%;padding:10px;border-radius:12px;border:none;font-family:var(--jak);font-size:0.76rem;font-weight:700;cursor:pointer;transition:var(--transition)}
+.bk-on{color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
+.bk-on:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(0,0,0,0.2)}
+.bk-off{background:var(--bg3);color:var(--text4);cursor:not-allowed;border:1.5px solid var(--border)}
+.ticker{background:linear-gradient(90deg,var(--c5),var(--c7));padding:7px 1.5rem;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ticker-lbl{font-family:var(--jak);font-weight:800;font-size:0.6rem;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:0.12em;white-space:nowrap}
+.ticker-track{flex:1;overflow:hidden}
+.ticker-inner{display:flex;gap:2.5rem;animation:tick 30s linear infinite;white-space:nowrap}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{font-size:0.7rem;color:rgba(255,255,255,0.8);flex-shrink:0}
+.ti strong{color:#fff}
+ 
+/* ═══ TIMETABLE VIEW ═══ */
+.timetable-wrap{flex:1;overflow:auto;padding:1rem 1.5rem 1.5rem}
+.tt-grid{display:grid;gap:0;min-width:700px}
+.tt-head-row{display:grid;grid-template-columns:80px repeat(7,1fr);gap:2px;margin-bottom:2px}
+.tt-head-cell{font-size:0.65rem;font-weight:800;color:var(--text4);font-family:var(--jak);text-align:center;padding:4px}
+.tt-row{display:grid;grid-template-columns:80px repeat(7,1fr);gap:2px;margin-bottom:2px}
+.tt-time{font-size:0.62rem;font-weight:800;color:var(--text4);font-family:var(--jak);display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+.tt-cell{border-radius:8px;min-height:36px;padding:3px;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:0.55rem;font-weight:700;font-family:var(--jak);cursor:pointer;transition:var(--transition);text-align:center;line-height:1.3}
+.tt-cell:hover{transform:scale(1.05);z-index:10;position:relative}
+.tt-empty{background:var(--bg3);color:var(--text4)}
+.tt-class{color:#fff}
+.tt-free{background:rgba(6,214,160,0.12);color:#059c76;border:1px solid rgba(6,214,160,0.2)}
+ 
+/* ═══ PAGE: CHAT ═══ */
+#p-chat{flex-direction:row}
+.csb{width:270px;flex-shrink:0;background:var(--bg2);border-right:1.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.csb-head{padding:1rem 1rem 0.75rem;border-bottom:1.5px solid var(--border)}
+.csb-title{font-family:var(--bri);font-size:0.7rem;font-weight:800;color:var(--text4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
+.csb-search{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;padding:0 10px}
+.csb-search input{background:none;border:none;outline:none;font-size:0.78rem;color:var(--text);padding:7px 0;width:100%;font-family:var(--jak)}
+.csb-search input::placeholder{color:var(--text4)}
+.csb-list{flex:1;overflow-y:auto;padding:4px 0}
+.csb-dept{font-size:0.58rem;font-weight:800;color:var(--text4);letter-spacing:0.1em;text-transform:uppercase;padding:8px 12px 3px;font-family:var(--jak)}
+.csb-item{display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;transition:background 0.15s;border-left:3px solid transparent}
+.csb-item:hover{background:var(--bg3)}
+.csb-item.active{background:var(--bg3)}
+.csb-av{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--bri);font-size:0.68rem;font-weight:800;flex-shrink:0;position:relative}
+.csb-sdot{position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;border-radius:50%;border:2px solid var(--bg2)}
+.csb-info{min-width:0}
+.csb-name{font-size:0.76rem;font-weight:700;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--jak)}
+.csb-item.active .csb-name{color:var(--text)}
+.csb-sub{font-size:0.63rem;color:var(--text4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.chat-hdr{padding:0.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-bottom:1.5px solid var(--border);flex-shrink:0}
+.ch-av{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:var(--bri);font-size:0.84rem;font-weight:800;box-shadow:0 4px 14px rgba(0,0,0,0.12)}
+.ch-name{font-family:var(--bri);font-size:1rem;font-weight:800}
+.ch-meta{font-size:0.68rem;color:var(--text3);margin-top:1px}
+.ctx-bar{padding:7px 1.25rem;background:var(--bg3);border-bottom:1.5px solid var(--border);display:flex;gap:1.5rem;flex-wrap:wrap;flex-shrink:0}
+.ctx-i{display:flex;flex-direction:column;gap:1px}
+.ctx-l{font-size:0.56rem;font-weight:800;color:var(--text4);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--jak)}
+.ctx-v{font-size:0.7rem;color:var(--text2);font-weight:600}
+.msgs{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:10px}
+.msg-row{display:flex;gap:8px;max-width:78%;animation:msgIn 0.22s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg-row.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-row.ai{align-self:flex-start}
+.m-av{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--bri);font-size:0.58rem;font-weight:800;flex-shrink:0;margin-top:2px}
+.m-bubble{padding:10px 14px;border-radius:16px;font-size:0.83rem;line-height:1.65}
+.user .m-bubble{background:linear-gradient(135deg,var(--c5),var(--c7));color:#fff;border-bottom-right-radius:4px;box-shadow:0 4px 16px rgba(123,47,255,0.28)}
+.ai .m-bubble{background:var(--bg2);color:var(--text);border:1.5px solid var(--border2);border-bottom-left-radius:4px;box-shadow:var(--shadow)}
+.m-time{font-size:0.58rem;color:var(--text4);margin-top:3px}
+.user .m-time{text-align:right}.ai .m-time{text-align:left}
+.typing-row{align-self:flex-start;display:flex;gap:8px}
+.t-bub{padding:10px 16px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;border-bottom-left-radius:4px;display:flex;align-items:center;gap:5px;box-shadow:var(--shadow)}
+.td{width:6px;height:6px;border-radius:50%;background:var(--text4);animation:tb 1.1s ease infinite}
+.td:nth-child(2){animation-delay:.22s}.td:nth-child(3){animation-delay:.44s}
+@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.quick-wrap{padding:6px 1.25rem 0;display:flex;gap:5px;flex-wrap:wrap}
+.q-btn{font-size:0.66rem;padding:4px 10px;border-radius:14px;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text3);cursor:pointer;transition:var(--transition);font-family:var(--jak);font-weight:600;white-space:nowrap}
+.q-btn:hover{border-color:var(--c5);color:var(--c5);background:rgba(123,47,255,0.06)}
+.input-area{padding:0.85rem 1.25rem 1rem;border-top:1.5px solid var(--border);background:var(--bg2);display:flex;align-items:flex-end;gap:8px;flex-shrink:0}
+.input-box{flex:1;background:var(--bg3);border:1.5px solid var(--border2);border-radius:14px;padding:8px 12px;display:flex;align-items:flex-end;gap:8px;transition:var(--transition)}
+.input-box:focus-within{border-color:var(--c5);background:var(--bg2)}
+.chat-ta{flex:1;background:none;border:none;outline:none;font-family:var(--jak);font-size:0.83rem;color:var(--text);resize:none;max-height:100px;line-height:1.5;min-height:20px}
+.chat-ta::placeholder{color:var(--text4)}
+.send-b{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--c5),var(--c7));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:var(--transition);box-shadow:0 4px 14px rgba(123,47,255,0.35)}
+.send-b:hover{transform:scale(1.08)}.send-b:active{transform:scale(0.93)}.send-b:disabled{background:var(--border2);box-shadow:none}
+.chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text4)}
+.ce-icon{width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,rgba(123,47,255,0.1),rgba(58,134,255,0.1));border:2px solid rgba(123,47,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:4px;font-size:26px}
+.ce-title{font-family:var(--bri);font-size:0.95rem;font-weight:800;color:var(--text2)}
+.ce-sub{font-size:0.76rem;text-align:center;max-width:220px;line-height:1.6;color:var(--text4)}
+ 
+/* ═══ PAGE: EMAIL ═══ */
+#p-email{flex-direction:row}
+.email-layout{display:grid;grid-template-columns:330px 1fr;width:100%;overflow:hidden}
+.email-left{background:var(--bg2);border-right:1.5px solid var(--border);overflow-y:auto;padding:1.25rem}
+.email-right{overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:1rem;background:var(--bg)}
+.type-row{display:flex;gap:8px;margin-bottom:1rem}
+.type-b{flex:1;padding:10px;border-radius:12px;cursor:pointer;font-family:var(--bri);font-size:0.76rem;font-weight:800;transition:var(--transition);text-align:center;border:2px solid var(--border);background:var(--bg3);color:var(--text3)}
+.type-b.tc{background:rgba(58,134,255,0.1);border-color:rgba(58,134,255,0.4);color:var(--c7)}
+.type-b.td2{background:rgba(6,214,160,0.1);border-color:rgba(6,214,160,0.4);color:#059c76}
+.email-out{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;padding:1.5rem;min-height:380px;display:flex;flex-direction:column}
+.eo-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1.5px solid var(--border)}
+.eo-btn{font-size:0.7rem;padding:5px 12px;border:1.5px solid var(--border2);border-radius:8px;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--jak);font-weight:600;transition:var(--transition)}
+.eo-btn:hover{background:var(--c5);border-color:var(--c5);color:#fff}
+.email-subj{font-family:var(--bri);font-size:0.92rem;font-weight:800;background:linear-gradient(135deg,rgba(123,47,255,0.07),rgba(58,134,255,0.07));border:1.5px solid rgba(123,47,255,0.15);border-radius:12px;padding:10px 14px;margin:12px 0;color:var(--text)}
+.email-body-txt{font-size:0.83rem;color:var(--text2);line-height:1.9;white-space:pre-wrap;flex:1}
+.email-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px;color:var(--text4)}
+.tone-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;padding:1.25rem}
+.guide-box{background:var(--bg2);border:1.5px solid var(--border);border-radius:16px;padding:1.1rem;margin-top:1.25rem}
+.guide-r{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.guide-r:last-child{border-bottom:none;padding-bottom:0}
+.g-tag{font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:5px;white-space:nowrap;flex-shrink:0;margin-top:2px;font-family:var(--jak);text-transform:uppercase;letter-spacing:0.04em}
+.g-c{background:rgba(58,134,255,0.12);color:var(--c7)}.g-d{background:rgba(6,214,160,0.12);color:#059c76}
+.g-text{font-size:0.74rem;color:var(--text3);line-height:1.6}
+.g-text strong{color:var(--text2);font-weight:700}
+.type-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.66rem;font-weight:800;font-family:var(--jak)}
+.tb-c{background:rgba(58,134,255,0.12);border:1px solid rgba(58,134,255,0.25);color:var(--c7)}
+.tb-d{background:rgba(6,214,160,0.12);border:1px solid rgba(6,214,160,0.25);color:#059c76}
+ 
+/* ═══ PAGE: GRIEVANCE ═══ */
+#p-grievance{flex-direction:column;overflow-y:auto;padding:1.25rem 1.5rem}
+.griev-grid{display:grid;grid-template-columns:380px 1fr;gap:1.25rem;margin-top:1rem}
+.griev-form{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;padding:1.5rem;height:fit-content}
+.gi{background:var(--bg2);border:1.5px solid var(--border);border-radius:16px;padding:1.1rem;transition:var(--transition);cursor:pointer;position:relative;overflow:hidden;animation:cardIn 0.3s ease both}
+.gi:hover{border-color:var(--border2);transform:translateX(3px)}
+.gi-prog-wrap{margin-top:9px;height:4px;background:var(--bg4);border-radius:2px}
+.gi-prog{height:100%;border-radius:2px;transition:width 0.6s ease}
+ 
+/* ═══ PAGE: DASHBOARD ═══ */
+#p-dashboard{flex-direction:column;overflow-y:auto;padding:1.25rem 1.5rem}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem}
+.metric{border-radius:20px;padding:1.25rem;position:relative;overflow:hidden;animation:cardIn 0.4s ease both}
+.metric::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:0.2;background:rgba(255,255,255,0.3)}
+.m-lbl{font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;font-family:var(--jak);margin-bottom:6px;opacity:0.75}
+.m-val{font-family:var(--bri);font-size:2.2rem;font-weight:800;letter-spacing:-0.04em;line-height:1}
+.m-sub{font-size:0.68rem;margin-top:5px;opacity:0.65}
+.m-trend{font-size:0.64rem;font-weight:800;padding:3px 8px;border-radius:8px;background:rgba(255,255,255,0.2);margin-top:8px;display:inline-block;font-family:var(--jak)}
+.dash-r2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.dash-r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.dash-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;padding:1.25rem;animation:cardIn 0.4s ease both}
+.dc-title{font-family:var(--bri);font-size:0.86rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;color:var(--text)}
+.dc-badge{font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--bg4);color:var(--text4);font-family:var(--jak)}
+.hm-grid{display:grid;gap:3px}
+.hm-lbl{font-size:0.56rem;color:var(--text4);font-family:var(--jak);font-weight:700;text-align:center}
+.hm-cell{aspect-ratio:1;border-radius:4px;cursor:pointer;transition:var(--transition)}
+.hm-cell:hover{transform:scale(1.35);z-index:10;position:relative}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:88px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:6px 6px 0 0;transition:var(--transition);cursor:pointer}
+.bar:hover{filter:brightness(1.15);transform:scaleY(1.05);transform-origin:bottom}
+.bar-lbl{font-size:0.56rem;color:var(--text4);font-family:var(--jak);font-weight:700}
+.busy-r{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.busy-name{font-size:0.68rem;color:var(--text2);min-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--jak);font-weight:700}
+.busy-track{flex:1;height:7px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.busy-fill{height:100%;border-radius:4px;transition:width 0.8s ease}
+.busy-val{font-size:0.64rem;font-weight:800;min-width:22px;text-align:right;font-family:var(--jak);color:var(--text3)}
+.act-r{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.act-r:last-child{border-bottom:none}
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.act-txt{flex:1;font-size:0.7rem;color:var(--text3);line-height:1.5}
+.act-txt strong{color:var(--text2);font-weight:700}
+.act-time{font-size:0.6rem;color:var(--text4);white-space:nowrap}
+ 
+/* ═══ FACULTY PROFILE MODAL ═══ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(4px);
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:24px;
+  width:520px;max-height:80vh;overflow-y:auto;
+  transform:translateY(20px) scale(0.97);transition:var(--transition);
+  box-shadow:0 24px 80px rgba(0,0,0,0.25);
+}
+.modal-overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-banner{height:100px;position:relative}
+.modal-av{position:absolute;bottom:-28px;left:24px;width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:var(--bri);font-size:1rem;font-weight:800;border:3px solid var(--bg2);box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.modal-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,0.2);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:var(--transition)}
+.modal-close:hover{background:rgba(0,0,0,0.4)}
+.modal-body{padding:42px 24px 24px}
+.modal-name{font-family:var(--bri);font-size:1.2rem;font-weight:800;color:var(--text);margin-bottom:2px}
+.modal-role{font-size:0.76rem;color:var(--text3);margin-bottom:14px}
+.modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.ms-item{background:var(--bg3);border-radius:12px;padding:10px;text-align:center}
+.ms-val{font-family:var(--bri);font-size:1.1rem;font-weight:800;color:var(--text)}
+.ms-lbl{font-size:0.6rem;color:var(--text4);font-family:var(--jak);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+.modal-section{margin-bottom:14px}
+.modal-sec-title{font-size:0.62rem;font-weight:800;color:var(--text4);text-transform:uppercase;letter-spacing:0.1em;font-family:var(--jak);margin-bottom:6px}
+.modal-sec-body{font-size:0.78rem;color:var(--text2);line-height:1.6}
+.stars{display:flex;gap:2px}
+.star{font-size:14px}
+.star.filled{color:#ff8c00}.star.empty{color:var(--border2)}
+.pub-item{font-size:0.74rem;color:var(--text3);padding:5px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.pub-item:last-child{border-bottom:none}
+.modal-cta{width:100%;margin-top:14px}
+ 
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);padding:11px 18px;border-radius:14px;font-size:0.8rem;z-index:9000;font-family:var(--jak);font-weight:700;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow2);opacity:0;transform:translateY(14px) scale(0.96);pointer-events:none;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.toast.show{opacity:1;transform:translateY(0) scale(1)}
+.toast-icon{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px}
+ 
+/* ═══ WHATSAPP MOCK ═══ */
+.wa-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(4px)}
+.wa-overlay.open{opacity:1;pointer-events:all}
+.wa-phone{background:#111b21;border-radius:32px;width:340px;overflow:hidden;box-shadow:0 32px 100px rgba(0,0,0,0.5);transform:translateY(24px);transition:var(--transition)}
+.wa-overlay.open .wa-phone{transform:translateY(0)}
+.wa-status-bar{background:#111b21;padding:10px 20px 0;display:flex;justify-content:space-between;align-items:center}
+.wa-time{color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;font-family:var(--jak)}
+.wa-header{background:#1f2c34;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.wa-av{width:34px;height:34px;border-radius:50%;background:#128c7e;display:flex;align-items:center;justify-content:center;font-family:var(--bri);font-size:0.7rem;font-weight:800;color:#fff}
+.wa-hname{color:#fff;font-size:14px;font-weight:700;font-family:var(--jak)}
+.wa-hsub{color:rgba(255,255,255,0.5);font-size:11px;font-family:var(--jak)}
+.wa-body{background:#0d1418;padding:12px;min-height:180px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%230d1418'/%3E%3C/svg%3E")}
+.wa-msg{background:#005c4b;border-radius:12px 12px 3px 12px;padding:10px 14px;margin-left:40px;margin-bottom:4px;animation:waMsgIn 0.4s ease 0.3s both}
+@keyframes waMsgIn{from{opacity:0;transform:translateY(8px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.wa-msg-text{color:#fff;font-size:13px;font-family:var(--jak);line-height:1.5}
+.wa-msg-time{color:rgba(255,255,255,0.45);font-size:10px;font-family:var(--jak);text-align:right;margin-top:4px}
+.wa-close{display:block;width:100%;padding:12px;background:#1f2c34;border:none;color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;font-family:var(--jak);font-weight:600;transition:background 0.2s}
+.wa-close:hover{background:#2a3942;color:#fff}
+ 
+/* ═══ MISC ═══ */
+.hidden{display:none!important}
+.spin{animation:spinning 0.9s linear infinite}
+@keyframes spinning{to{transform:rotate(360deg)}}
+.avail-view-toggle{display:flex;gap:4px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;padding:3px}
+.vt-btn{font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:7px;cursor:pointer;color:var(--text3);transition:var(--transition);font-family:var(--jak);border:none;background:none}
+.vt-btn.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+.search-pill{display:flex;align-items:center;gap:7px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:10px;padding:6px 12px}
+.search-pill input{background:none;border:none;outline:none;font-size:0.78rem;color:var(--text);font-family:var(--jak);width:150px}
+.search-pill input::placeholder{color:var(--text4)}
+ 
+/* ═══ API KEY MODAL ═══ */
+.key-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(6px)}
+.key-modal-overlay.open{opacity:1;pointer-events:all}
+.key-modal{background:var(--bg2);border:2px solid var(--border);border-radius:24px;width:480px;padding:2rem;box-shadow:0 32px 80px rgba(0,0,0,0.3);transform:translateY(20px) scale(0.97);transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.key-modal-overlay.open .key-modal{transform:translateY(0) scale(1)}
+.km-icon{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,rgba(66,133,244,0.15),rgba(52,168,83,0.15));border:2px solid rgba(66,133,244,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:1rem}
+.km-title{font-family:var(--bri);font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:4px}
+.km-sub{font-size:0.8rem;color:var(--text3);margin-bottom:1.5rem;line-height:1.6}
+.km-input{width:100%;background:var(--bg3);border:2px solid var(--border2);border-radius:12px;padding:12px 14px;font-family:var(--jak);font-size:0.85rem;color:var(--text);outline:none;transition:all 0.2s;margin-bottom:1rem;letter-spacing:0.02em}
+.km-input:focus{border-color:#4285f4;background:var(--bg2)}
+.km-steps{background:var(--bg3);border-radius:12px;padding:1rem;margin-bottom:1.25rem}
+.km-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;font-size:0.76rem;color:var(--text3);line-height:1.5}
+.km-step:last-child{margin-bottom:0}
+.km-step-num{width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,#4285f4,#34a853);color:#fff;font-size:0.62rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--jak)}
+.km-step a{color:#4285f4;text-decoration:none;font-weight:600}
+.km-step a:hover{text-decoration:underline}
+.km-btns{display:flex;gap:8px}
+.km-save{flex:1;padding:12px;background:linear-gradient(135deg,#4285f4,#34a853);color:#fff;border:none;border-radius:12px;font-family:var(--bri);font-size:0.9rem;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(66,133,244,0.3)}
+.km-save:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(66,133,244,0.4)}
+.km-skip{padding:12px 20px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:12px;font-family:var(--jak);font-size:0.82rem;font-weight:700;cursor:pointer;color:var(--text3);transition:all 0.2s}
+.km-skip:hover{background:var(--bg4);color:var(--text2)}
+.gemini-badge{display:inline-flex;align-items:center;gap:6px;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:20px;background:linear-gradient(135deg,rgba(66,133,244,0.12),rgba(52,168,83,0.12));border:1.5px solid rgba(66,133,244,0.25);color:#3367d6;font-family:var(--jak);margin-left:8px}
+.key-set-indicator{display:flex;align-items:center;gap:5px;font-size:0.68rem;font-weight:700;color:#059c76;font-family:var(--jak)}
+ 
+</style>
+</head>
+<body>
+ 
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">FacultyConnect</div>
+  <div class="splash-tag">Your College, Smarter — AI Powered</div>
+  <div class="splash-stats">
+    <div class="ss-item"><div class="ss-num" id="sn1">0</div><div class="ss-lbl">Faculty</div></div>
+    <div class="ss-item"><div class="ss-num" id="sn2">0</div><div class="ss-lbl">Departments</div></div>
+    <div class="ss-item"><div class="ss-num" id="sn3">0</div><div class="ss-lbl">Meetings Today</div></div>
+  </div>
+  <div class="splash-bar"><div class="splash-prog"></div></div>
+  <div class="splash-dots"><div class="sd active"></div><div class="sd"></div><div class="sd"></div></div>
+</div>
+ 
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti-canvas"></canvas>
+ 
+ 
+<!-- GEMINI API KEY MODAL -->
+<div class="key-modal-overlay" id="keyModalOverlay">
+  <div class="key-modal">
+    <div class="km-icon">🤖</div>
+    <div class="km-title">Connect Gemini AI</div>
+    <div class="km-sub">Add your free Gemini API key to unlock AI-powered chat and email generation. FacultyConnect <strong>auto-selects the best available model</strong> with free quota.</div>
+    <div class="km-steps">
+      <div class="km-step"><div class="km-step-num">1</div><span>Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></span></div>
+      <div class="km-step"><div class="km-step-num">2</div><span>Click <strong>"Create API Key"</strong> — free, no billing or credit card needed</span></div>
+      <div class="km-step"><div class="km-step-num">3</div><span>Paste below. App tries <strong>gemini-2.5-flash → gemini-2.0-flash → gemini-2.0-flash-lite</strong> automatically if one hits quota</span></div>
+    </div>
+    <input class="km-input" type="password" id="apiKeyInput" placeholder="AIza... (paste your Gemini API key here)">
+    <div style="background:rgba(6,214,160,0.08);border:1.5px solid rgba(6,214,160,0.2);border-radius:10px;padding:10px 12px;margin-bottom:1rem;font-size:0.74rem;color:#059c76;font-family:var(--jak);font-weight:600">
+      ✅ <strong>Free tier limits:</strong> gemini-2.5-flash (preview) · gemini-1.5-flash = 1,500 req/day fallback · All auto-fallback on quota
+    </div>
+    <div class="km-btns">
+      <button class="km-save" onclick="saveKey()">✅ Save & Activate Gemini</button>
+      <button class="km-skip" onclick="closeKeyModal()">Use templates</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- FACULTY PROFILE MODAL -->
+<div class="modal-overlay" id="profileModal" onclick="closeModal(event)">
+  <div class="modal" id="modalBox"></div>
+</div>
+ 
+<!-- WHATSAPP MOCK -->
+<div class="wa-overlay" id="waOverlay" onclick="closeWA(event)">
+  <div class="wa-phone" id="waPhone">
+    <div class="wa-status-bar"><span class="wa-time" id="waTime">9:41</span><span style="color:rgba(255,255,255,0.7);font-size:11px">●●●</span></div>
+    <div class="wa-header">
+      <div class="wa-av" id="waAv">PM</div>
+      <div><div class="wa-hname" id="waName">Dr. Priya Mehta</div><div class="wa-hsub">FacultyConnect Notification</div></div>
+    </div>
+    <div class="wa-body">
+      <div class="wa-msg"><div class="wa-msg-text" id="waMsg">Meeting confirmed!</div><div class="wa-msg-time">✓✓ <span id="waT">9:41</span></div></div>
+    </div>
+    <button class="wa-close" onclick="document.getElementById('waOverlay').classList.remove('open')">Close</button>
+  </div>
+</div>
+ 
+<!-- APP -->
+<div class="app" id="app">
+<nav>
+  <div class="nav-logo">Faculty<span style="-webkit-text-fill-color:initial;background:none;color:inherit">Connect</span><sup>AI</sup></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="gp('availability',this)">📅 Availability</button>
+    <button class="nav-tab" onclick="gp('chat',this)">💬 AI Chat</button>
+    <button class="nav-tab" onclick="gp('email',this)">✉️ Email</button>
+    <button class="nav-tab" onclick="gp('grievance',this)">🚩 Grievance</button>
+    <button class="nav-tab" onclick="gp('dashboard',this)">📊 Analytics</button>
+  </div>
+  <div class="nav-right">
+    <button id="keyNavBtn" onclick="showKeyModal()" style="font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:10px;border:1.5px solid rgba(255,140,0,0.4);background:rgba(255,140,0,0.08);color:#b36000;cursor:pointer;font-family:var(--jak);transition:all 0.2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">🔑 Add Gemini Key</button>
+    <div class="ai-pill"><div class="ai-dot"></div>AI Live</div>
+    <button class="notif-btn" onclick="toggleNotif()" id="notifBtn">
+      🔔<span class="notif-badge" id="notifBadge">3</span>
+      <div class="notif-panel" id="notifPanel">
+        <div class="np-head"><span class="np-title">Notifications</span><span class="np-clear" onclick="clearNotifs()">Clear all</span></div>
+        <div id="notifList"></div>
+      </div>
+    </button>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☀️</button>
+    <div class="nav-student">Hi, <strong>Riya Sharma</strong> · CS · 3rd Year</div>
+  </div>
+</nav>
+ 
+<div class="pages">
+ 
+<!-- ═══ AVAILABILITY ═══ -->
+<div class="page active" id="p-availability">
+  <div style="display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden">
+    <div class="avail-top">
+      <div>
+        <div class="pg-title">Faculty <span class="grad-text">Availability</span></div>
+        <div class="pg-sub">Live status · Book instantly · Click any card for full profile</div>
+        <div class="stat-row" id="statRow"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="avail-view-toggle">
+          <button class="vt-btn active" onclick="setView('cards',this)">🃏 Cards</button>
+          <button class="vt-btn" onclick="setView('timetable',this)">🗓️ Timetable</button>
+        </div>
+        <div class="search-pill">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#aaa" stroke-width="1.4"/><line x1="10" y1="10" x2="14" y2="14" stroke="#aaa" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <input id="searchIn" placeholder="Search faculty…" oninput="filterGrid(this.value)">
+        </div>
+      </div>
+    </div>
+    <div class="dept-bar" id="deptBar"></div>
+    <div id="cardsView" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div class="avail-scroll"><div class="avail-grid" id="cardsGrid"></div></div>
+    </div>
+    <div id="ttView" class="hidden" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div class="timetable-wrap" id="ttWrap"></div>
+    </div>
+    <div class="ticker"><span class="ticker-lbl">● Live</span><div class="ticker-track"><div class="ticker-inner" id="tickInner"></div></div></div>
+  </div>
+</div>
+ 
+<!-- ═══ CHAT ═══ -->
+<div class="page" id="p-chat">
+  <div class="csb">
+    <div class="csb-head">
+      <div class="csb-title">Choose Faculty</div>
+      <div class="csb-search"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#aaa" stroke-width="1.4"/><line x1="10" y1="10" x2="14" y2="14" stroke="#aaa" stroke-width="1.4" stroke-linecap="round"/></svg><input placeholder="Search…" oninput="filterCSB(this.value)"></div>
+    </div>
+    <div class="csb-list" id="chatList"></div>
+  </div>
+  <div class="chat-main">
+    <div class="chat-empty" id="chatEmpty">
+      <div class="ce-icon">💬</div>
+      <div class="ce-title">Select a faculty</div>
+      <div class="ce-sub">Each AI knows their schedule, subjects, and personality.</div>
+    </div>
+    <div id="chatView" class="hidden" style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+      <div class="chat-hdr">
+        <div style="display:flex;align-items:center;gap:11px">
+          <div class="ch-av" id="chAv"></div>
+          <div><div class="ch-name" id="chName"></div><div class="ch-meta" id="chMeta"></div></div>
+        </div>
+        <div style="display:flex;gap:7px;align-items:center">
+          <div style="font-size:0.67rem;font-weight:700;padding:4px 10px;border-radius:8px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text3);font-family:var(--jak)" id="chSt"></div>
+          <div style="font-size:0.66rem;font-weight:700;padding:4px 10px;border-radius:8px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text4);font-family:var(--jak)" id="chRm"></div>
+          <div style="font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:8px;background:rgba(66,133,244,0.1);border:1px solid rgba(66,133,244,0.25);color:#3367d6;font-family:var(--jak);display:flex;align-items:center;gap:4px">🤖 <span id="activeModelBadge">gemini-2.5-flash</span></div>
+        </div>
+      </div>
+      <div class="ctx-bar" id="ctxBar"></div>
+      <div class="msgs" id="msgs"></div>
+      <div class="quick-wrap" id="quickWrap"></div>
+      <div class="input-area">
+        <div class="input-box">
+          <textarea class="chat-ta" id="chatTa" placeholder="Ask about availability, doubts, assignments… (Enter to send)" rows="1" onkeydown="chatKey(event)" oninput="taR(this)"></textarea>
+        </div>
+        <button class="send-b" id="sendB" onclick="chatSend()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ═══ EMAIL ═══ -->
+<div class="page" id="p-email">
+  <div class="email-layout">
+    <div class="email-left">
+      <div class="pg-title" style="margin-bottom:1.25rem">Email <span class="grad-text">Assistant</span></div>
+      <label class="lbl">To — Faculty</label>
+      <select class="input-style" id="eFac"></select>
+      <label class="lbl">Purpose</label>
+      <select class="input-style" id="ePurp">
+        <option value="meeting">Request a meeting</option>
+        <option value="assignment">Assignment extension</option>
+        <option value="marks">Marks / grades query</option>
+        <option value="project">Project guidance</option>
+        <option value="leave">Leave application</option>
+        <option value="recommendation">Recommendation letter</option>
+        <option value="doubt">Academic doubt</option>
+        <option value="complaint">Issue / complaint</option>
+      </select>
+      <label class="lbl">Your name & roll no.</label>
+      <input class="input-style" id="eStudent" placeholder="e.g. Riya Sharma, 22CS045">
+      <label class="lbl">Context (optional)</label>
+      <textarea class="input-style" id="eCtx" rows="3" style="resize:none;line-height:1.5" placeholder="e.g. missed 2 labs due to fever, have medical cert"></textarea>
+      <label class="lbl">Email type</label>
+      <div class="type-row">
+        <button class="type-b tc" id="btnC" onclick="setET('concise')">⚡ Concise</button>
+        <button class="type-b" id="btnD" onclick="setET('detailed')">📝 Detailed</button>
+      </div>
+      <button class="btn-grad" style="width:100%" onclick="genEmail()">✨ Generate Email</button>
+      <div style="margin-top:1.25rem">
+        <div style="font-family:var(--bri);font-size:0.78rem;font-weight:800;color:var(--text3);margin-bottom:8px">📌 When to use which?</div>
+        <div class="guide-box"><div id="guideRows"></div></div>
+      </div>
+    </div>
+    <div class="email-right">
+      <div class="email-out" id="emailOut">
+        <div class="eo-hdr">
+          <span style="font-family:var(--bri);font-size:0.88rem;font-weight:800;color:var(--text)">✉️ Generated email</span>
+          <div style="display:flex;gap:6px">
+            <button class="eo-btn" onclick="copyEmail()">📋 Copy</button>
+            <button class="eo-btn" onclick="showTone()">🎯 Tone</button>
+          </div>
+        </div>
+        <div id="emailContent"><div class="email-ph"><div style="font-size:2rem">✉️</div><div style="font-family:var(--bri);font-size:0.92rem;font-weight:800;color:var(--text2)">Fill the form to generate</div><div style="font-size:0.74rem;max-width:200px;text-align:center;line-height:1.65;color:var(--text4)">AI writes a perfectly toned email for any situation</div></div></div>
+      </div>
+      <div class="tone-card" id="toneCard" style="display:none">
+        <div style="font-family:var(--bri);font-size:0.86rem;font-weight:800;margin-bottom:1rem;color:var(--text)">🎯 Tone Analysis</div>
+        <div id="toneRows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ═══ GRIEVANCE ═══ -->
+<div class="page" id="p-grievance">
+  <div class="pg-title">Grievance <span style="color:var(--c1)">Tracker</span></div>
+  <div class="pg-sub" style="margin-bottom:0">Submit anonymously · Track resolution · Auto-escalates after 72 hrs</div>
+  <div class="griev-grid">
+    <div>
+      <div class="griev-form">
+        <div style="font-family:var(--bri);font-size:0.92rem;font-weight:800;margin-bottom:1rem;color:var(--text)">📮 Submit an issue</div>
+        <label class="lbl">Category</label>
+        <select class="input-style" id="gCat"><option>Academic — marks dispute</option><option>Academic — attendance</option><option>Faculty behaviour</option><option>Infrastructure</option><option>Examination issue</option><option>Other</option></select>
+        <label class="lbl">Against</label>
+        <select class="input-style" id="gFac"></select>
+        <label class="lbl">Description</label>
+        <textarea class="input-style" id="gDesc" rows="4" style="resize:none;line-height:1.5" placeholder="Be specific — dates, incidents, what happened."></textarea>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem">
+          <input type="checkbox" id="gAnon" checked style="accent-color:var(--c5);width:16px;height:16px">
+          <label for="gAnon" style="font-size:0.76rem;color:var(--text3);cursor:pointer;font-weight:600">Submit anonymously</label>
+        </div>
+        <button class="btn-grad" style="width:100%;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 4px 16px rgba(255,77,109,0.3)" onclick="submitGriev()">🚩 Submit Grievance</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--bri);font-size:0.86rem;font-weight:800;color:var(--text2);margin-bottom:10px">Your grievances</div>
+      <div id="grievList" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ═══ DASHBOARD ═══ -->
+<div class="page" id="p-dashboard">
+  <div class="pg-title">Analytics <span class="grad-text">Dashboard</span></div>
+  <div class="pg-sub" style="margin-bottom:1rem">Live college data · Admin insights</div>
+  <div class="metrics-row" id="metricsRow"></div>
+  <div class="dash-r2">
+    <div class="dash-card"><div class="dc-title">Availability heatmap <span class="dc-badge">This week</span></div><div id="hmWrap"></div></div>
+    <div class="dash-card"><div class="dc-title">Requests per faculty <span class="dc-badge">Today</span></div><div class="bar-chart" id="barChart"></div></div>
+  </div>
+  <div class="dash-r3" style="margin-top:1rem">
+    <div class="dash-card"><div class="dc-title">Busiest faculty</div><div id="busyBars"></div></div>
+    <div class="dash-card"><div class="dc-title">Slot utilisation</div><div id="slotUtil"></div></div>
+    <div class="dash-card"><div class="dc-title">Live activity</div><div id="actFeed"></div></div>
+  </div>
+</div>
+ 
+</div>
+</div><!-- /app -->
+ 
+<div class="toast" id="toast"><div class="toast-icon" id="toastIcon"></div><span id="toastTxt"></span></div>
+ 
+<script>
+ 
+/* ═══ GEMINI API ═══ */
+let GEMINI_KEY = localStorage.getItem('fc_gemini_key') || '';
+ 
+/* ═══ GEMINI CALL HELPER — direct REST API ═══ */
+const GEMINI_MODELS=['gemini-2.5-flash','gemini-2.0-flash','gemini-2.0-flash-lite'];
+async function geminiCall(contents,maxTokens=800,temp=0.7,isChat=false){
+  for(const modelName of GEMINI_MODELS){
+    try{
+      const url=`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`;
+      const body={
+        contents:contents,
+        generationConfig:{maxOutputTokens:maxTokens,temperature:temp}
+      };
+      const res=await fetch(url,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      });
+      const data=await res.json();
+      if(data.error){
+        const msg=data.error.message||'';
+        const status=data.error.code||res.status;
+        if(status===429||msg.includes('quota')||msg.includes('RESOURCE_EXHAUSTED')){
+          console.warn(modelName+' quota hit, trying next model...');
+          continue;
+        }
+        if(msg.includes('API_KEY_INVALID')||msg.includes('API key not valid')){
+          if(isChat)return '❌ Invalid API key. Click the key button in the nav to update it.';
+          return '__ERROR__';
+        }
+        console.warn(modelName+' error: '+msg);
+        if(isChat)return '⚠️ Error: '+msg.split('.')[0];
+        return '__ERROR__';
+      }
+      const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+      if(!text){console.warn(modelName+' returned empty');continue;}
+      const badge=document.getElementById('activeModelBadge');
+      if(badge)badge.textContent=modelName;
+      return text;
+    }catch(e){
+      console.warn(modelName+' fetch error:',e.message);
+      continue;
+    }
+  }
+  if(isChat)return '⚠️ All models hit quota or are unavailable. Wait 1 min and retry.';
+  return '__ERROR__';
+}
+ 
+function showKeyModal(){document.getElementById('keyModalOverlay').classList.add('open');setTimeout(()=>document.getElementById('apiKeyInput').focus(),300)}
+function closeKeyModal(){document.getElementById('keyModalOverlay').classList.remove('open')}
+function saveKey(){
+  const k=document.getElementById('apiKeyInput').value.trim();
+  if(!k){showToast('⚠️','Empty key','Please paste your Gemini API key','#ff8c00');return}
+  GEMINI_KEY=k;localStorage.setItem('fc_gemini_key',k);
+  closeKeyModal();updateKeyStatus();
+  showToast('🎉','Gemini Connected!','AI chat and email generation are now live','#06d6a0');
+}
+function clearKey(){GEMINI_KEY='';localStorage.removeItem('fc_gemini_key');updateKeyStatus();showToast('🔑','Key removed','Add a new key to re-enable AI','#ff8c00')}
+function updateKeyStatus(){
+  const btn=document.getElementById('keyNavBtn');
+  if(GEMINI_KEY){btn.innerHTML='<span style="width:7px;height:7px;border-radius:50%;background:#06d6a0;display:inline-block;margin-right:4px"></span>Gemini On';btn.style.borderColor='rgba(6,214,160,0.4)';btn.style.color='#059c76';btn.style.background='rgba(6,214,160,0.1)'}
+  else{btn.innerHTML='🔑 Add Gemini Key';btn.style.borderColor='rgba(255,140,0,0.4)';btn.style.color='#b36000';btn.style.background='rgba(255,140,0,0.08)'}
+}
+document.getElementById('keyModalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('keyModalOverlay'))closeKeyModal()});
+ 
+const DC={'Computer Science':'#7b2fff','Electronics':'#3a86ff','Mechanical':'#fb5607','Civil':'#06d6a0','Mathematics':'#f72585'};
+const DL={'Computer Science':'rgba(123,47,255,0.12)','Electronics':'rgba(58,134,255,0.12)','Mechanical':'rgba(251,86,7,0.12)','Civil':'rgba(6,214,160,0.12)','Mathematics':'rgba(247,37,133,0.12)'};
+const FAC=[
+  {id:1,ini:'PM',dept:'Computer Science',name:'Dr. Priya Mehta',role:'HOD, CS',status:'free',statusLbl:'Available now',activity:'In office, reviewing project reports',subject:'Data Structures & Algorithms',expertise:'Algorithms, Complexity Theory',hours:'Mon–Wed 10–12, Fri 2–4',room:'CS-204',slots:['10:00 AM','10:30 AM','2:00 PM','3:30 PM'],taken:['11:00 AM','12:00 PM'],requests:34,rating:4.8,meetings:186,students:240,personality:'Strict but fair. Appreciates prepared students. Dislikes last-minute requests.',publications:['Fast Algorithm for Graph Traversal (2023)','Complexity Analysis in Distributed Systems (2022)'],qs:['Am I allowed to miss a lab?','When is the next DSA test?','Can I request an extension?','What are today\'s office hours?']},
+  {id:2,ini:'AT',dept:'Computer Science',name:'Prof. Arjun Tiwari',role:'Assoc. Prof, CS',status:'busy',statusLbl:'In lecture till 12 PM',activity:'Taking OS lecture in LT-3',subject:'Operating Systems, Networks',expertise:'OS internals, Networking, Linux',hours:'Tue & Thu 1–3 PM',room:'CS-108',slots:['12:30 PM','2:30 PM','4:00 PM'],taken:['9:00 AM','10:00 AM','11:00 AM'],requests:27,rating:4.6,meetings:142,students:200,personality:'Friendly, loves curious students, gives bonus for creative viva answers.',publications:['Network Security in Campus Environments (2023)'],qs:['When will sir be free?','Doubt in CPU scheduling','Is CN assignment extended?','Can I come after class?']},
+  {id:3,ini:'SR',dept:'Electronics',name:'Dr. Sunita Rao',role:'HOD, Electronics',status:'free',statusLbl:'Available now',activity:'In office, preparing lab manual',subject:'Analog Electronics, VLSI',expertise:'Circuit design, VLSI, Embedded',hours:'Mon, Wed, Fri 9:30–11:30',room:'EC-302',slots:['9:30 AM','11:30 AM','1:00 PM'],taken:['3:00 PM'],requests:19,rating:4.7,meetings:128,students:180,personality:'Methodical, expects neat lab records, direct and no-nonsense.',publications:['Low-Power VLSI Design Patterns (2022)','Analog Signal Processing Review (2021)'],qs:['Is VLSI viva postponed?','Get lab record signed?','Next week\'s syllabus?','I missed yesterday\'s lab']},
+  {id:4,ini:'RG',dept:'Electronics',name:'Prof. Rakesh Gupta',role:'Asst. Prof, EC',status:'away',statusLbl:'Back at 2:30 PM',activity:'Out for faculty meeting',subject:'DSP, Communication Systems',expertise:'DSP, RF communication',hours:'Wed & Fri 3–5 PM',room:'EC-115',slots:['2:30 PM','3:00 PM','4:30 PM'],taken:['10:00 AM','11:00 AM'],requests:15,rating:4.4,meetings:98,students:160,personality:'Relaxed, lenient with honest students, loves real-world applications.',publications:['Adaptive DSP for IoT Devices (2023)'],qs:['When will sir be back?','Help with DFT concept','Can I submit tomorrow?','Is there class today?']},
+  {id:5,ini:'NS',dept:'Mechanical',name:'Dr. Neha Sharma',role:'HOD, Mechanical',status:'free',statusLbl:'Available now',activity:'In office, available for students',subject:'Thermodynamics, Fluid Mechanics',expertise:'Thermal systems, CFD',hours:'Mon–Fri 9–11 AM',room:'ME-401',slots:['9:00 AM','10:30 AM','12:00 PM','3:00 PM'],taken:['2:00 PM'],requests:22,rating:4.9,meetings:210,students:190,personality:'Knowledgeable, strict on attendance, warm to sincere students.',publications:['CFD Simulation of Turbine Blades (2022)','Heat Transfer in Micro-channels (2021)'],qs:['Fluid mechanics test rescheduled?','Help with Bernoulli\'s theorem','Attendance condonation?','Office hours today?']},
+  {id:6,ini:'VJ',dept:'Mechanical',name:'Prof. Vikram Joshi',role:'Sr. Lecturer, ME',status:'busy',statusLbl:'Exam duty till 1 PM',activity:'Invigilating exam in Hall B',subject:'Manufacturing, CAD/CAM',expertise:'CNC machining, CAD',hours:'Mon, Wed 2–4 PM',room:'ME-210',slots:['1:30 PM','2:00 PM','4:00 PM'],taken:['9:00 AM','10:00 AM','11:00 AM','12:00 PM'],requests:11,rating:4.3,meetings:87,students:150,personality:'Practical-minded, loves hands-on demos, very helpful in labs.',publications:['CAM Optimization Strategies (2023)'],qs:['When does exam duty end?','CAD assignment query','Is next lab cancelled?','Can I submit report late?']},
+  {id:7,ini:'AP',dept:'Civil',name:'Dr. Amit Pandey',role:'HOD, Civil',status:'free',statusLbl:'Available now',activity:'In office, reviewing thesis drafts',subject:'Structural Analysis, Construction',expertise:'RCC design, Project planning',hours:'Mon, Wed, Fri 10–12',room:'CE-304',slots:['10:00 AM','11:30 AM','2:30 PM'],taken:['3:30 PM'],requests:13,rating:4.5,meetings:115,students:170,personality:'Methodical, publication-oriented, expects precise calculations.',publications:['Seismic Analysis of RC Frames (2022)','Green Construction Materials (2021)'],qs:['Doubt in bending moment','Thesis submission deadline?','Change project topic?','Office hours this week?']},
+  {id:8,ini:'RV',dept:'Mathematics',name:'Dr. Rahul Verma',role:'HOD, Mathematics',status:'free',statusLbl:'Available now',activity:'In office, available',subject:'Engineering Maths, Discrete Maths',expertise:'Calculus, Linear Algebra, Graph Theory',hours:'Tue, Thu 11 AM–1 PM',room:'SC-102',slots:['9:30 AM','10:30 AM','3:30 PM'],taken:['12:00 PM','1:00 PM'],requests:29,rating:4.7,meetings:195,students:280,personality:'Patient explainer, no question too basic, step-by-step approach.',publications:['Graph-Theoretic Approaches in CS (2023)','Applied Discrete Mathematics (2022)'],qs:['Struggling with eigenvalues','Explain Laplace transforms','Extra class this week?','End-sem maths prep?']}
+];
+const GUIDE=[{t:'c',when:'Requesting a meeting',why:'Just name, roll no., proposed time — no story needed.'},{t:'d',when:'Assignment extension',why:'Explain fully — illness, emergency. Attach proof if possible.'},{t:'c',when:'Asking for marks',why:'Mention subject, test date, ask for score or sheet.'},{t:'d',when:'Disputing a grade',why:'Lay out your case — question, your answer, why you deserve marks.'},{t:'c',when:'Quick project update',why:'2–3 lines: done, next, blocker.'},{t:'d',when:'Recommendation letter',why:'Share opportunity, achievements, timeline.'},{t:'d',when:'Raising a complaint',why:'Be factual — dates, incidents, resolution you seek.'}];
+let curDept='All',curSearch='',curView='cards',picked={},chatHist={},curFac=null,isTyping=false,eType='concise';
+let grievances=[{id:'GR-001',title:'Marks not updated after revaluation',cat:'Marks dispute',against:'Dr. Priya Mehta',status:'open',prog:30,date:'Mar 12'},{id:'GR-002',title:'Lab attendance not credited for hospital visit',cat:'Attendance',against:'Prof. Arjun Tiwari',status:'resolved',prog:100,date:'Mar 8'}];
+let actLog=[{text:'<strong>Dr. Priya Mehta</strong> meeting booked at 10:30 AM',dot:'#06d6a0',time:'2 min ago'},{text:'<strong>Prof. Tiwari</strong> status changed to Busy',dot:'#ff4d6d',time:'14 min ago'},{text:'Grievance <strong>GR-002</strong> resolved',dot:'#06d6a0',time:'1 hr ago'},{text:'<strong>Dr. Sunita Rao</strong> extended office hours',dot:'#3a86ff',time:'2 hr ago'}];
+const notifs=[{text:'Meeting with Dr. Priya Mehta confirmed for 10:30 AM',dot:'#06d6a0',time:'2 min ago'},{text:'Prof. Arjun Tiwari\'s office hours changed to 1–3 PM',dot:'#3a86ff',time:'30 min ago'},{text:'Grievance GR-002 has been resolved',dot:'#06d6a0',time:'1 hr ago'}];
+let isDark=false;
+ 
+/* SPLASH */
+function animCount(el,target,dur){let s=0,step=Math.ceil(target/30);let t=setInterval(()=>{s=Math.min(s+step,target);el.textContent=s;if(s>=target)clearInterval(t)},dur/30)}
+setTimeout(()=>{animCount(document.getElementById('sn1'),8,800);animCount(document.getElementById('sn2'),5,800);animCount(document.getElementById('sn3'),24,800)},1200);
+setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.getElementById('app').classList.add('visible');initAll()},2900);
+ 
+/* THEME */
+function toggleTheme(){isDark=!isDark;document.documentElement.setAttribute('data-theme',isDark?'dark':'');document.getElementById('themeBtn').textContent=isDark?'🌙':'☀️'}
+ 
+/* NAV */
+function gp(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('p-'+id).classList.add('active');btn.classList.add('active')}
+ 
+/* NOTIFS */
+function toggleNotif(){document.getElementById('notifPanel').classList.toggle('open')}
+function clearNotifs(){document.getElementById('notifBadge').style.display='none';document.getElementById('notifList').innerHTML='<div style="padding:12px 16px;font-size:0.76rem;color:var(--text4);text-align:center">No new notifications</div>';document.getElementById('notifPanel').classList.remove('open')}
+function renderNotifs(){document.getElementById('notifList').innerHTML=notifs.map(n=>`<div class="np-item"><div class="np-dot" style="background:${n.dot}"></div><div><div class="np-text">${n.text}</div><div class="np-time">${n.time}</div></div></div>`).join('')}
+document.addEventListener('click',e=>{if(!e.target.closest('#notifBtn'))document.getElementById('notifPanel').classList.remove('open')});
+ 
+/* AVAILABILITY */
+function initAvail(){
+  const depts=['All',...new Set(FAC.map(f=>f.dept))];
+  document.getElementById('deptBar').innerHTML=depts.map((d,i)=>`<button class="d-chip${i===0?' active':''}" data-dept="${d}" onclick="setDept('${d}',this)" style="${i>0?`color:#fff;background:${DC[d]};border-color:${DC[d]}`:''}">${d}</button>`).join('');
+  renderStats();renderGrid();renderTicker();renderTimetable();
+}
+function setDept(d,btn){curDept=d;document.querySelectorAll('.d-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderGrid()}
+function filterGrid(v){curSearch=v;renderGrid()}
+function setView(v,btn){curView=v;document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('cardsView').classList.toggle('hidden',v!=='cards');document.getElementById('ttView').classList.toggle('hidden',v!=='timetable')}
+function renderStats(){const f=FAC.filter(x=>x.status==='free').length,b=FAC.filter(x=>x.status==='busy').length,a=FAC.filter(x=>x.status==='away').length;document.getElementById('statRow').innerHTML=`<div class="stat-chip sc-free">● ${f} Free</div><div class="stat-chip sc-busy">● ${b} In class</div><div class="stat-chip sc-away">● ${a} Away</div>`}
+function renderGrid(){
+  let list=FAC;
+  if(curDept!=='All')list=list.filter(f=>f.dept===curDept);
+  if(curSearch)list=list.filter(f=>f.name.toLowerCase().includes(curSearch.toLowerCase())||f.dept.toLowerCase().includes(curSearch.toLowerCase()));
+  const sc={free:'#06d6a0',busy:'#ff4d6d',away:'#ff8c00'};
+  if(!list.length){document.getElementById('cardsGrid').innerHTML=`<div style="color:var(--text4);font-size:0.82rem;padding:1rem">No faculty found.</div>`;return}
+  document.getElementById('cardsGrid').innerHTML=list.map((f,i)=>{
+    const k='f'+f.id,ps=picked[k]||null;
+    const allS=[...f.taken.map(s=>({s,o:false})),...f.slots.map(s=>({s,o:true}))].sort((a,b)=>a.s.localeCompare(b.s));
+    return `<div class="f-card" style="animation-delay:${i*0.05}s" onclick="openProfile(${f.id})">
+      <div class="f-card-banner" style="background:linear-gradient(90deg,${DC[f.dept]},${DC[f.dept]}80)"></div>
+      <div class="f-card-body">
+        <div class="fc-top">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="fc-av" style="background:${DL[f.dept]};color:${DC[f.dept]}">${f.ini}<span class="sdot" style="background:${sc[f.status]}"></span></div>
+            <div><div class="fc-name">${f.name}</div><div class="fc-role">${f.role}</div></div>
+          </div>
+          <span class="fc-dept-pill" style="background:${DL[f.dept]};color:${DC[f.dept]};border:1.5px solid ${DC[f.dept]}44">${f.dept.split(' ')[0]}</span>
+        </div>
+        <div class="st-pill stp-${f.status}"><span style="width:6px;height:6px;border-radius:50%;background:${sc[f.status]};display:inline-block"></span>${f.statusLbl}</div>
+        <div class="fc-activity" style="border-color:${DC[f.dept]}">${f.activity}</div>
+        <div class="slots-lbl">Open slots today</div>
+        <div class="slots-row" onclick="event.stopPropagation()">${allS.map(({s,o})=>`<div class="sl ${o?(ps===s?'sl-open picked':'sl-open'):'sl-taken'}" onclick="${o?`pSlot(event,${f.id},'${s}')`:''}">${s}</div>`).join('')}</div>
+        <button class="bk-btn ${ps?'bk-on':'bk-off'}" style="${ps?`background:linear-gradient(135deg,${DC[f.dept]},${DC[f.dept]}cc)`:''}" onclick="event.stopPropagation();${ps?`bookIt(${f.id})`:''}" ${ps?'':'disabled'}>${ps?`Book ${ps} with ${f.name.split(' ').pop()} →`:'Select a slot above'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function pSlot(e,id,s){e.stopPropagation();picked['f'+id]=s;renderGrid()}
+function bookIt(id){
+  const f=FAC.find(x=>x.id===id),s=picked['f'+id];
+  addAct(`<strong>${f.name}</strong> meeting booked at ${s} by Riya Sharma`,DC[f.dept]);
+  delete picked['f'+id];renderGrid();
+  showWA(f,s);launchConfetti();
+  showToast('🎉','Meeting booked!',`${f.name} · ${s}`,'#06d6a0');
+}
+ 
+/* TIMETABLE */
+function renderTimetable(){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const times=['9 AM','10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM'];
+  const classes=[
+    {fac:'PM',day:0,time:0,label:'DSA Lec'},{fac:'PM',day:2,time:0,label:'DSA Lec'},{fac:'AT',day:0,time:1,label:'OS Lec'},{fac:'AT',day:2,time:1,label:'OS Lec'},
+    {fac:'SR',day:1,time:0,label:'VLSI Lab'},{fac:'SR',day:3,time:1,label:'Analog'},{fac:'RV',day:1,time:2,label:'Maths'},{fac:'RV',day:3,time:2,label:'Maths'},
+    {fac:'NS',day:0,time:3,label:'Thermo'},{fac:'NS',day:2,time:3,label:'Fluid'},{fac:'VJ',day:1,time:4,label:'CAD Lab'},{fac:'AP',day:2,time:5,label:'Struct'},
+  ];
+  let html=`<div class="tt-head-row"><div></div>${days.map(d=>`<div class="tt-head-cell">${d}</div>`).join('')}</div>`;
+  times.forEach((t,ti)=>{
+    html+=`<div class="tt-row"><div class="tt-time">${t}</div>`;
+    days.forEach((_,di)=>{
+      const cl=classes.find(c=>days.indexOf(days[di])===di&&c.time===ti);
+      const f=cl?FAC.find(x=>x.ini===cl.fac):null;
+      if(f&&cl){html+=`<div class="tt-cell tt-class" style="background:${DC[f.dept]}dd;font-size:0.55rem" title="${f.name}">${f.ini}<br>${cl.label}</div>`}
+      else{html+=`<div class="tt-cell tt-empty">—</div>`}
+    });
+    html+='</div>';
+  });
+  document.getElementById('ttWrap').innerHTML=`<div style="min-width:700px">${html}</div>`;
+}
+ 
+/* TICKER */
+function renderTicker(){
+  const msgs=[...FAC.filter(f=>f.status==='free').map(f=>`<span class="ti"><strong>${f.name}</strong> is free now · ${f.room}</span>`),...FAC.filter(f=>f.status==='busy').map(f=>`<span class="ti"><strong>${f.name}</strong> ${f.activity}</span>`),`<span class="ti">12 meetings booked today</span>`,`<span class="ti"><strong>Dr. Sunita Rao</strong> extended hours till 12:30 PM</span>`];
+  document.getElementById('tickInner').innerHTML=[...msgs,...msgs].join('');
+}
+ 
+/* FACULTY PROFILE MODAL */
+function openProfile(id){
+  const f=FAC.find(x=>x.id===id);const dc=DC[f.dept],dl=DL[f.dept];
+  const sc={free:'#06d6a0',busy:'#ff4d6d',away:'#ff8c00'};
+  const stars='★'.repeat(Math.round(f.rating))+'☆'.repeat(5-Math.round(f.rating));
+  document.getElementById('modalBox').innerHTML=`
+    <div class="modal-banner" style="background:linear-gradient(135deg,${dc},${dc}80)">
+      <div class="modal-av" style="background:${dl};color:${dc}">${f.ini}</div>
+      <button class="modal-close" onclick="document.getElementById('profileModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-name">${f.name}</div>
+      <div class="modal-role">${f.role} · ${f.dept}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+        <span style="color:#ff8c00;font-size:14px">${stars}</span>
+        <span style="font-size:0.72rem;color:var(--text3);font-weight:600">${f.rating}/5.0 rating</span>
+        <span style="width:6px;height:6px;border-radius:50%;background:${sc[f.status]};display:inline-block;margin-left:4px"></span>
+        <span style="font-size:0.68rem;color:var(--text3);font-weight:600">${f.statusLbl}</span>
+      </div>
+      <div class="modal-stats">
+        <div class="ms-item"><div class="ms-val" style="color:${dc}">${f.meetings}</div><div class="ms-lbl">Meetings</div></div>
+        <div class="ms-item"><div class="ms-val" style="color:${dc}">${f.students}</div><div class="ms-lbl">Students</div></div>
+        <div class="ms-item"><div class="ms-val" style="color:${dc}">${f.requests}</div><div class="ms-lbl">Requests</div></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-sec-title">📚 Subjects</div>
+        <div class="modal-sec-body">${f.subject}</div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-sec-title">🔬 Expertise</div>
+        <div class="modal-sec-body">${f.expertise}</div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-sec-title">🕐 Office hours</div>
+        <div class="modal-sec-body">${f.hours} · Room ${f.room}</div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-sec-title">💡 Teaching style</div>
+        <div class="modal-sec-body">${f.personality}</div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-sec-title">📄 Recent publications</div>
+        ${f.publications.map(p=>`<div class="pub-item">📝 ${p}</div>`).join('')}
+      </div>
+      <button class="btn-grad modal-cta" style="background:linear-gradient(135deg,${dc},${dc}cc);box-shadow:0 4px 14px ${dc}44" onclick="document.getElementById('profileModal').classList.remove('open');selFac(${f.id});gp('chat',document.querySelectorAll('.nav-tab')[1])">💬 Start AI Chat with ${f.name.split(' ').pop()}</button>
+    </div>`;
+  document.getElementById('profileModal').classList.add('open');
+}
+function closeModal(e){if(e.target===document.getElementById('profileModal'))document.getElementById('profileModal').classList.remove('open')}
+ 
+/* WHATSAPP */
+function showWA(f,slot){
+  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('waAv').textContent=f.ini;document.getElementById('waAv').style.background=DC[f.dept];
+  document.getElementById('waName').textContent=f.name;document.getElementById('waTime').textContent=now;document.getElementById('waT').textContent=now;
+  document.getElementById('waMsg').textContent=`✅ Meeting Confirmed!\n\nYou have a meeting with ${f.name} (${f.role}) at ${slot} today.\n📍 ${f.room}\n\nPlease arrive on time. – FacultyConnect AI`;
+  document.getElementById('waOverlay').classList.add('open');
+}
+function closeWA(e){if(e.target===document.getElementById('waOverlay'))document.getElementById('waOverlay').classList.remove('open')}
+ 
+/* CONFETTI */
+function launchConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const ctx=canvas.getContext('2d');
+  const pieces=[];const colors=['#ff4d6d','#ff8c00','#06d6a0','#7b2fff','#3a86ff','#f72585','#fb5607'];
+  for(let i=0;i<120;i++)pieces.push({x:Math.random()*canvas.width,y:-10-Math.random()*100,r:Math.random()*6+3,c:colors[Math.floor(Math.random()*colors.length)],vx:(Math.random()-0.5)*4,vy:Math.random()*4+2,va:(Math.random()-0.5)*0.2,a:Math.random()*Math.PI*2});
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.fillStyle=p.c;ctx.globalAlpha=Math.max(0,1-frame/90);
+      ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6);ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.a+=p.va;p.vy+=0.05;
+    });
+    frame++;if(frame<100)requestAnimationFrame(draw);else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+ 
+/* CHAT */
+function initChat(){renderCSB('');document.getElementById('eFac').innerHTML=`<option value="">Select faculty…</option>`+FAC.map(f=>`<option value="${f.id}">${f.name} — ${f.role}</option>`).join('');document.getElementById('gFac').innerHTML=FAC.map(f=>`<option>${f.name} (${f.dept})</option>`).join('')}
+function renderCSB(q){
+  const depts=[...new Set(FAC.map(f=>f.dept))];let html='';
+  const sc={free:'#06d6a0',busy:'#ff4d6d',away:'#ff8c00'};
+  depts.forEach(d=>{
+    const list=FAC.filter(f=>f.dept===d&&(!q||f.name.toLowerCase().includes(q.toLowerCase())));
+    if(!list.length)return;
+    html+=`<div class="csb-dept">${d}</div>`;
+    list.forEach(f=>{
+      const isA=curFac?.id===f.id;
+      html+=`<div class="csb-item${isA?' active':''}" style="border-left-color:${isA?DC[f.dept]:'transparent'}" onclick="selFac(${f.id})">
+        <div class="csb-av" style="background:${DL[f.dept]};color:${DC[f.dept]}">${f.ini}<span class="csb-sdot" style="background:${sc[f.status]}"></span></div>
+        <div class="csb-info"><div class="csb-name">${f.name}</div><div class="csb-sub">${f.subject.split(',')[0]}</div></div>
+      </div>`;
+    });
+  });
+  document.getElementById('chatList').innerHTML=html||`<div style="padding:1rem;font-size:0.76rem;color:var(--text4)">No results</div>`;
+}
+function filterCSB(v){renderCSB(v)}
+function selFac(id){
+  curFac=FAC.find(f=>f.id===id);if(!chatHist[id])chatHist[id]=[];renderCSB('');
+  document.getElementById('chatEmpty').classList.add('hidden');
+  const cv=document.getElementById('chatView');cv.classList.remove('hidden');cv.style.display='flex';
+  const sc={free:'#06d6a0',busy:'#ff4d6d',away:'#ff8c00'};
+  const av=document.getElementById('chAv');av.style.background=DL[curFac.dept];av.style.color=DC[curFac.dept];av.textContent=curFac.ini;
+  document.getElementById('chName').textContent=curFac.name;document.getElementById('chMeta').textContent=curFac.role+' · '+curFac.dept;
+  document.getElementById('chSt').innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:${sc[curFac.status]};display:inline-block;margin-right:4px;vertical-align:middle"></span>${curFac.statusLbl}`;
+  document.getElementById('chRm').textContent=curFac.room;
+  document.getElementById('ctxBar').innerHTML=`<div class="ctx-i"><div class="ctx-l">Subject</div><div class="ctx-v">${curFac.subject.split(',')[0]}</div></div><div class="ctx-i"><div class="ctx-l">Hours</div><div class="ctx-v">${curFac.hours.split(',')[0]}</div></div><div class="ctx-i"><div class="ctx-l">Room</div><div class="ctx-v">${curFac.room}</div></div><div class="ctx-i"><div class="ctx-l">Now</div><div class="ctx-v" style="color:${sc[curFac.status]}">${curFac.activity}</div></div>`;
+  document.getElementById('quickWrap').innerHTML=curFac.qs.map(q=>`<button class="q-btn" onclick="qs('${q.replace(/'/g,"\\'")}')">↗ ${q}</button>`).join('');
+  renderMsgs();if(!chatHist[id].length){const g=`Hi! I'm the AI for ${curFac.name}. ${curFac.statusLbl}. I know their schedule (${curFac.hours}) and subjects (${curFac.subject}). How can I help?`;pushMsg('ai',g)}
+}
+function renderMsgs(){const c=document.getElementById('msgs');c.innerHTML='';chatHist[curFac.id].forEach(m=>appendMsg(m.role,m.content,m.time,false));scMsgs()}
+function appendMsg(role,content,time,anim=true){
+  const c=document.getElementById('msgs');const row=document.createElement('div');row.className=`msg-row ${role}`;if(!anim)row.style.animation='none';
+  const aiAv=`<div class="m-av" style="background:${DL[curFac.dept]};color:${DC[curFac.dept]}">${curFac.ini}</div>`;
+  const uAv=`<div class="m-av" style="background:rgba(247,37,133,0.12);color:#f72585">RS</div>`;
+  row.innerHTML=`${role==='user'?uAv:aiAv}<div><div class="m-bubble">${content}</div><div class="m-time">${time||tnow()}</div></div>`;
+  c.appendChild(row);scMsgs();
+}
+function scMsgs(){const c=document.getElementById('msgs');c.scrollTop=c.scrollHeight}
+function showTyp(){const c=document.getElementById('msgs');const r=document.createElement('div');r.className='typing-row';r.id='typR';r.innerHTML=`<div class="m-av" style="background:${DL[curFac.dept]};color:${DC[curFac.dept]}">${curFac.ini}</div><div class="t-bub"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;c.appendChild(r);scMsgs()}
+function hideTyp(){const t=document.getElementById('typR');if(t)t.remove()}
+function pushMsg(role,content){const t=tnow();chatHist[curFac.id].push({role,content,time:t});appendMsg(role,content,t)}
+function qs(q){document.getElementById('chatTa').value=q;chatSend()}
+async function chatSend(){
+  const ta=document.getElementById('chatTa');const txt=ta.value.trim();if(!txt||isTyping)return;
+  if(!GEMINI_KEY){showToast('🔑','API Key needed','Enter your Gemini API key first','#ff8c00');showKeyModal();return}
+  pushMsg('user',txt);ta.value='';taR(ta);isTyping=true;document.getElementById('sendB').disabled=true;showTyp();
+  const sys=`You are the AI assistant representing ${curFac.name}, ${curFac.role} at a college. Speak as their helpful representative. Facts: Subjects: ${curFac.subject}. Expertise: ${curFac.expertise}. Office hours: ${curFac.hours}. Room: ${curFac.room}. Status: ${curFac.statusLbl}. Activity: ${curFac.activity}. Personality: ${curFac.personality}. Rules: Keep replies 2-4 sentences. Use first person. Never invent exam dates.`;
+  // Build contents array in Gemini REST format
+  const prevMsgs=chatHist[curFac.id].slice(0,-1).map(m=>({role:m.role==='ai'?'model':'user',parts:[{text:m.content}]}));
+  const contents=[
+    {role:'user',parts:[{text:sys}]},
+    {role:'model',parts:[{text:'Understood! I am the AI assistant for '+curFac.name+'. How can I help you?'}]},
+    ...prevMsgs,
+    {role:'user',parts:[{text:txt}]}
+  ];
+  try{
+    const reply=await geminiCall(contents,800,0.7,true);
+    hideTyp();pushMsg('ai',reply);
+  }catch(e){hideTyp();pushMsg('ai','Unexpected error: '+e.message);}
+  isTyping=false;document.getElementById('sendB').disabled=false;document.getElementById('chatTa').focus();
+}
+function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend()}}
+function taR(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px'}
+ 
+/* EMAIL */
+const ETPL={
+  meeting:{c:{s:(n,f)=>`Meeting request — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n}, and I'd like to request a brief meeting at your convenience${x?` regarding ${x}`:''}. Please let me know a suitable slot.\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Request for appointment — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI hope this message finds you well. I am ${n} from the ${f.dept} department.\n\nI would like to respectfully request a meeting${x?` regarding ${x}`:'. I would appreciate the opportunity to discuss an academic matter with you'}.\n\nI am flexible to meet at your convenience. Kindly let me know a suitable slot.\n\nThank you for your time and consideration.\n\nWarm regards,\n${n.split(',')[0]}`}},
+  assignment:{c:{s:(n,f)=>`Extension request — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n}. I cannot submit the assignment on time${x?` due to ${x}`:''} and request a brief extension.\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Assignment extension request — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} from the ${f.dept} department.\n\nI am writing to request an extension for the assignment${x?`. ${x}`:'. I have encountered unforeseen circumstances preventing timely completion'}.\n\nI sincerely apologize and assure you I will submit quality work if granted an extension.\n\nRespectfully,\n${n.split(',')[0]}`}},
+  marks:{c:{s:(n,f)=>`Marks query — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n}. Could you share my marks${x?` for ${x}`:''}? Any feedback is welcome too.\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Evaluation query — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} from the ${f.dept} department.\n\nI would like clarification on my marks${x?` for ${x}`:' in the recent assessment'}. I would love to understand where I can improve.\n\nCould you share my score and any brief feedback?\n\nThank you,\n${n.split(',')[0]}`}},
+  leave:{c:{s:(n,f)=>`Leave intimation — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n}. I will be absent${x?` due to ${x}`:''} and wanted to inform you in advance.\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Leave application — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} from the ${f.dept} department.\n\nI am formally requesting leave from classes${x?`. Reason: ${x}`:'. I have an urgent personal matter requiring attention'}.\n\nI will cover all missed content and assignments on time.\n\nRespectfully,\n${n.split(',')[0]}`}},
+  recommendation:{c:{s:(n,f)=>`Recommendation letter request — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n}${x?`, applying for ${x}`:''} and would be honoured if you could provide a recommendation letter.\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Request for recommendation — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} from the ${f.dept} department.\n\nI am requesting a recommendation letter${x?` for ${x}`:' for an upcoming opportunity'}. I am happy to share my CV or SOP to assist.\n\nI sincerely appreciate your time.\n\nWarmly,\n${n.split(',')[0]}`}},
+  project:{c:{s:(n,f)=>`Project guidance — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} and need guidance${x?` on ${x}`:' on my project'}. Could we connect briefly?\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Project mentorship request — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} from the ${f.dept} department.\n\nI am working on my project and require guidance. ${x||'I have some challenges and would benefit from your insights.'}\n\nCould we schedule a brief meeting?\n\nThank you,\n${n.split(',')[0]}`}},
+  doubt:{c:{s:(n,f)=>`Academic doubt — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n}. I have a doubt${x?` regarding ${x}`:''}. Could you clarify when convenient?\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Clarification request — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} from the ${f.dept} department.\n\nDespite reviewing my notes, I am struggling with${x?` ${x}`:' a recent concept'}. A brief explanation would be very helpful.\n\nThank you,\n${n.split(',')[0]}`}},
+  complaint:{c:{s:(n,f)=>`Issue — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} and wish to bring a matter to your attention${x?`: ${x}`:''}.\n\nThank you,\n${n.split(',')[0]}`},d:{s:(n,f)=>`Formal concern — ${n}`,b:(n,f,x)=>`Dear ${f.name},\n\nI am ${n} from the ${f.dept} department.\n\nI am writing to respectfully bring a concern to your attention. ${x||'This matter has been affecting me academically.'}\n\nI trust your guidance to help resolve this. Happy to discuss in person.\n\nRespectfully,\n${n.split(',')[0]}`}},
+};
+function renderGuide(){document.getElementById('guideRows').innerHTML=GUIDE.map(r=>`<div class="guide-r"><span class="g-tag ${r.t==='c'?'g-c':'g-d'}">${r.t==='c'?'Concise':'Detailed'}</span><div class="g-text"><strong>${r.when}</strong> — ${r.why}</div></div>`).join('')}
+function setET(t){eType=t;document.getElementById('btnC').className='type-b'+(t==='concise'?' tc':'');document.getElementById('btnD').className='type-b'+(t==='detailed'?' td2':'')}
+async function genEmail(){
+  const fid=document.getElementById('eFac').value,purpose=document.getElementById('ePurp').value,name=document.getElementById('eStudent').value.trim()||'Your Name, Roll No',ctx=document.getElementById('eCtx').value.trim(),f=FAC.find(x=>x.id==fid);
+  if(!f){showToast('⚠️','Select faculty','Please select a faculty member','#ff8c00');return}
+  const ec=document.getElementById('emailContent');
+  ec.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:2rem;color:var(--text4);font-size:0.82rem"><svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--c5)" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>Gemini AI is writing your email…</div>`;
+  const bCls=eType==='concise'?'tb-c':'tb-d',bLbl=eType==='concise'?'⚡ Concise':'📝 Detailed';
+  if(GEMINI_KEY){
+    const purposeMap={meeting:'requesting a meeting',assignment:'requesting an assignment deadline extension',marks:'asking about marks or grades',project:'seeking project guidance',leave:'applying for leave',recommendation:'requesting a recommendation letter',doubt:'asking about an academic doubt',complaint:'raising a formal complaint or concern'};
+    const typeInstr=eType==='concise'?'Write a SHORT, concise email (max 5-6 lines total). Be direct and polite. No long explanations.':'Write a DETAILED, formal email (10-15 lines). Include proper context, reasoning, and professional closing.';
+    const prompt=`Write a professional student email to a college faculty member.
+Student name and roll no: ${name}
+Faculty: ${f.name}, ${f.role}, ${f.dept} department
+Purpose: ${purposeMap[purpose]||purpose}
+Additional context from student: ${ctx||'None provided'}
+Tone: ${eType==='concise'?'Concise and direct':'Detailed and formal'}
+Instructions: ${typeInstr}
+Also suggest a good email subject line.
+Format your response EXACTLY as:
+SUBJECT: [subject line here]
+BODY:
+[email body here]
+Sign off with the student's first name only.`;
+    {
+      const rawReply=await geminiCall([{role:'user',parts:[{text:prompt}]}],600,0.6,false);
+      if(rawReply&&!rawReply.startsWith('__ERROR__')){
+        const raw=rawReply;
+        const subMatch=raw.match(/SUBJECT:\s*(.+)/i);
+        const bodyMatch=raw.match(/BODY:\s*([\s\S]+)/i);
+        const subj=subMatch?subMatch[1].trim():`${purposeMap[purpose]||purpose} — ${name}`;
+        const body=bodyMatch?bodyMatch[1].trim():raw;
+        ec.innerHTML=`
+          <div style="margin-bottom:14px">
+            <div style="display:flex;gap:8px;font-size:0.76rem;margin-bottom:4px"><span style="color:var(--text4);min-width:48px;font-weight:700">To:</span><span style="color:var(--text2)">${f.name} &lt;${f.name.toLowerCase().replace(/[. ]/g,'').substring(0,12)}@college.ac.in&gt;</span></div>
+            <div style="display:flex;gap:8px;font-size:0.76rem;margin-bottom:4px"><span style="color:var(--text4);min-width:48px;font-weight:700">From:</span><span style="color:var(--text2)">${name.split(',')[0]} &lt;${name.split(',')[0].toLowerCase().replace(' ','.')}@student.college.ac.in&gt;</span></div>
+            <div style="display:flex;gap:8px;font-size:0.76rem;align-items:center"><span style="color:var(--text4);min-width:48px;font-weight:700">Type:</span><span class="type-badge ${bCls}">${bLbl}</span><span style="margin-left:6px;font-size:0.62rem;background:rgba(26,197,94,0.12);color:#059c76;border:1px solid rgba(26,197,94,0.25);padding:2px 8px;border-radius:10px;font-weight:700;font-family:var(--jak)">✨ Gemini AI</span></div>
+          </div>
+          <div class="email-subj">${subj}</div>
+          <div class="email-body-txt" id="eBTxt">${body}</div>`;
+        showTone();return;
+      }
+    }
+  }
+  // fallback to templates
+  const k=eType==='concise'?'c':'d',tpl=ETPL[purpose]?.[k];
+  if(!tpl){ec.innerHTML='<div style="color:var(--text4);padding:1rem">Template not available.</div>';return}
+  ec.innerHTML=`
+    <div style="margin-bottom:14px">
+      <div style="display:flex;gap:8px;font-size:0.76rem;margin-bottom:4px"><span style="color:var(--text4);min-width:48px;font-weight:700">To:</span><span style="color:var(--text2)">${f.name} &lt;${f.name.toLowerCase().replace(/[. ]/g,'').substring(0,12)}@college.ac.in&gt;</span></div>
+      <div style="display:flex;gap:8px;font-size:0.76rem;margin-bottom:4px"><span style="color:var(--text4);min-width:48px;font-weight:700">From:</span><span style="color:var(--text2)">${name.split(',')[0]} &lt;${name.split(',')[0].toLowerCase().replace(' ','.')}@student.college.ac.in&gt;</span></div>
+      <div style="display:flex;gap:8px;font-size:0.76rem;align-items:center"><span style="color:var(--text4);min-width:48px;font-weight:700">Type:</span><span class="type-badge ${bCls}">${bLbl}</span><span style="margin-left:6px;font-size:0.62rem;background:rgba(245,166,35,0.12);color:#b36000;border:1px solid rgba(245,166,35,0.25);padding:2px 8px;border-radius:10px;font-weight:700;font-family:var(--jak)">📝 Template</span></div>
+    </div>
+    <div class="email-subj">${tpl.s(name,f)}</div>
+    <div class="email-body-txt" id="eBTxt">${tpl.b(name,f,ctx)}</div>`;
+  showTone();
+}
+function showTone(){
+  const s=eType==='concise'?{Formality:60,Urgency:45,Politeness:80,Clarity:90,Length:20}:{Formality:85,Urgency:55,Politeness:92,Clarity:78,Length:75};
+  const cols={Formality:'#7b2fff',Urgency:'#ff8c00',Politeness:'#06d6a0',Clarity:'#3a86ff',Length:'#f72585'};
+  document.getElementById('toneRows').innerHTML=Object.entries(s).map(([k,v])=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px"><div style="font-size:0.68rem;color:var(--text3);min-width:72px;font-family:var(--jak);font-weight:700">${k}</div><div style="flex:1;height:7px;background:var(--bg4);border-radius:4px;overflow:hidden"><div style="height:100%;width:${v}%;background:${cols[k]};border-radius:4px;transition:width 0.7s"></div></div><div style="font-size:0.68rem;font-weight:800;min-width:30px;text-align:right;font-family:var(--jak);color:${cols[k]}">${v}%</div></div>`).join('');
+  document.getElementById('toneCard').style.display='block';
+}
+function copyEmail(){const el=document.getElementById('eBTxt');if(!el){showToast('⚠️','Nothing to copy','Generate an email first','#ff8c00');return}const sb=document.querySelector('.email-subj');navigator.clipboard.writeText((sb?'Subject: '+sb.textContent+'\n\n':'')+el.textContent).then(()=>showToast('✅','Copied!','Email copied to clipboard','#06d6a0'))}
+ 
+/* GRIEVANCE */
+function submitGriev(){
+  const desc=document.getElementById('gDesc').value.trim();if(!desc){showToast('⚠️','Empty field','Please describe the issue','#ff8c00');return}
+  const cat=document.getElementById('gCat').value,against=document.getElementById('gFac').value.split('(')[0].trim(),id='GR-00'+(grievances.length+1);
+  grievances.unshift({id,title:desc.substring(0,50)+(desc.length>50?'…':''),cat,against,status:'open',prog:10,date:'Mar '+new Date().getDate()});
+  document.getElementById('gDesc').value='';renderGrievances();addAct(`New grievance <strong>${id}</strong> submitted`,'#ff8c00');
+  showToast('🚩','Submitted!',`Tracking ID: ${id}`,'#ff8c00');
+}
+function renderGrievances(){
+  const sC={open:'open',resolved:'resolved',escalated:'escalated'};
+  const sLbl={open:'Open',resolved:'Resolved',escalated:'Escalated'};
+  const sCol={open:'#ff8c00',resolved:'#06d6a0',escalated:'#ff4d6d'};
+  document.getElementById('grievList').innerHTML=grievances.map((g,i)=>`
+    <div class="gi" style="padding-left:calc(1.1rem + 4px);animation-delay:${i*0.05}s">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${sCol[g.status]||'#aaa'};border-radius:16px 0 0 16px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:0.63rem;font-weight:800;color:var(--text4);font-family:var(--jak)">${g.id} · ${g.date} · ${g.cat}</span>
+        <span style="font-size:0.63rem;font-weight:800;padding:3px 9px;border-radius:8px;font-family:var(--jak);background:${sCol[g.status]}18;color:${sCol[g.status]};border:1px solid ${sCol[g.status]}40">${sLbl[g.status]||g.status}</span>
+      </div>
+      <div style="font-size:0.83rem;font-weight:700;color:var(--text);font-family:var(--jak);margin-bottom:3px">${g.title}</div>
+      <div style="font-size:0.68rem;color:var(--text4);font-weight:500">Against: ${g.against}</div>
+      <div class="gi-prog-wrap"><div class="gi-prog" style="width:${g.prog}%;background:${sCol[g.status]||'#aaa'}"></div></div>
+    </div>`).join('');
+}
+ 
+/* DASHBOARD */
+function initDash(){
+  const free=FAC.filter(f=>f.status==='free').length;
+  [{lbl:'Total Faculty',val:FAC.length,sub:`${new Set(FAC.map(f=>f.dept)).size} departments`,trend:'All active',bg:'linear-gradient(135deg,#7b2fff,#3a86ff)'},{lbl:'Available Now',val:free,sub:`${FAC.length-free} unavailable`,trend:`${free} can meet you now`,bg:'linear-gradient(135deg,#06d6a0,#118ab2)'},{lbl:'Meetings Today',val:24,sub:'12 confirmed · 12 pending',trend:'↑ 18% vs yesterday',bg:'linear-gradient(135deg,#fb5607,#ff8c00)'},{lbl:'Open Grievances',val:grievances.filter(g=>g.status==='open').length,sub:'Avg resolve: 2.1 days',trend:'1 new today',bg:'linear-gradient(135deg,#f72585,#ff4d6d)'}].forEach((m,i)=>{
+    document.getElementById('metricsRow').innerHTML+=`<div class="metric" style="background:${m.bg};color:#fff;animation-delay:${i*0.1}s"><div class="m-lbl">${m.lbl}</div><div class="m-val">${m.val}</div><div class="m-sub">${m.sub}</div><span class="m-trend">${m.trend}</span></div>`;
+  });
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],times=['9','10','11','12','1','2','3','4'];
+  const hmColors=['#7b2fff','#3a86ff','#06d6a0','#f72585','#fb5607','#ff8c00','#ff4d6d','#118ab2'];
+  let hm=`<div class="hm-grid" style="grid-template-columns:24px repeat(7,1fr);gap:3px"><div></div>${days.map(d=>`<div class="hm-lbl">${d}</div>`).join('')}`;
+  times.forEach((t,ti)=>{hm+=`<div class="hm-lbl" style="text-align:right;padding-right:3px;line-height:20px">${t}</div>`;days.forEach(()=>{const v=Math.random(),op=0.1+v*0.9;hm+=`<div class="hm-cell" style="background:${hmColors[ti%hmColors.length]};opacity:${op.toFixed(2)}" title="${Math.round(v*10)} meetings"></div>`})});
+  hm+='</div>';document.getElementById('hmWrap').innerHTML=hm;
+  const maxR=Math.max(...FAC.map(f=>f.requests));
+  document.getElementById('barChart').innerHTML=FAC.map(f=>`<div class="bar-col"><div class="bar" style="height:${Math.round((f.requests/maxR)*100)}%;background:${DC[f.dept]};box-shadow:0 4px 10px ${DC[f.dept]}55" title="${f.name}: ${f.requests}"></div><div class="bar-lbl">${f.ini}</div></div>`).join('');
+  const sorted=[...FAC].sort((a,b)=>b.requests-a.requests);
+  document.getElementById('busyBars').innerHTML=sorted.map(f=>`<div class="busy-r"><div class="busy-name">${f.name.split(' ').pop()}</div><div class="busy-track"><div class="busy-fill" style="width:${Math.round((f.requests/sorted[0].requests)*100)}%;background:${DC[f.dept]}"></div></div><div class="busy-val">${f.requests}</div></div>`).join('');
+  [{lbl:'Booked',v:72,c:'#06d6a0'},{lbl:'Cancelled',v:12,c:'#ff4d6d'},{lbl:'Available',v:16,c:'#3a86ff'}].forEach(u=>{document.getElementById('slotUtil').innerHTML+=`<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:0.7rem;color:var(--text3);font-family:var(--jak);font-weight:700">${u.lbl}</span><span style="font-size:0.7rem;font-weight:800;font-family:var(--jak);color:${u.c}">${u.v}%</span></div><div style="height:7px;background:var(--bg4);border-radius:4px"><div style="height:100%;width:${u.v}%;background:${u.c};border-radius:4px;transition:width 0.7s"></div></div></div>`});
+  renderAct();
+}
+function addAct(text,dot){actLog.unshift({text,dot,time:'just now'});if(actLog.length>8)actLog.pop();renderAct()}
+function renderAct(){document.getElementById('actFeed').innerHTML=actLog.slice(0,5).map(a=>`<div class="act-r"><div class="act-dot" style="background:${a.dot}"></div><div style="flex:1"><div class="act-txt">${a.text}</div><div class="act-time">${a.time}</div></div></div>`).join('')}
+ 
+/* TOAST */
+let toastTmr;
+function showToast(icon,title,sub,color){
+  clearTimeout(toastTmr);
+  const t=document.getElementById('toast'),ti=document.getElementById('toastIcon'),tt=document.getElementById('toastTxt');
+  ti.textContent=icon;ti.style.background=color;
+  tt.innerHTML=`<strong>${title}</strong>${sub?`<div style="font-size:0.72rem;font-weight:400;color:var(--text3);margin-top:1px">${sub}</div>`:''}`;
+  t.classList.add('show');toastTmr=setTimeout(()=>t.classList.remove('show'),3500);
+}
+function tnow(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+ 
+/* INIT */
+function initAll(){initAvail();initChat();renderGuide();renderGrievances();initDash();renderNotifs();updateKeyStatus();if(!GEMINI_KEY)setTimeout(showKeyModal,1200)}
+</script>
+</body>
+</html>
